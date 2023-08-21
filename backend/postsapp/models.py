@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 class Post(models.Model):
     created = models.DateTimeField("Created",auto_now=True)
     name = models.CharField("Name of post", max_length=40)
+    image = models.ImageField("Image",upload_to="post_images",blank=True)
     desc = models.TextField()
     likes = models.PositiveIntegerField(blank=True,default=0)
     liked = models.ManyToManyField(get_user_model(),related_name="liked",blank=True)

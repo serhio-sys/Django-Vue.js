@@ -8,6 +8,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination,PageNumberPagination
+from django.utils import timezone
+from django.core.paginator import Paginator
+from django.urls import reverse_lazy
+
+import datetime
 
 class BasePostsMixin():
     permission_classes = [IsAuthenticatedOrReadOnly,]
@@ -18,8 +23,50 @@ class PostsReadOnlyViewSet(mixins.RetrieveModelMixin,
                            mixins.ListModelMixin,
                            BasePostsMixin,
                            GenericViewSet):
+    per_page = 8
+
     
-    pagination_class = LimitOffsetPagination
+    def list(self, request, *args, **kwargs):
+        string = request.GET.get("string", None)
+        date = request.GET.get("date", None)
+        to_oldest = request.GET.get("to_oldest", None)
+
+        data = Post.objects.all()
+        if string is not None:
+            data = data.filter(name__icontains = string)
+        if date is not None:
+            data = data.filter(created__contains=datetime.date(int(date.split("-")[0]),int(date.split("-")[1]),int(date.split("-")[2])))
+        if to_oldest is not None:
+            print(to_oldest)
+            if to_oldest:    
+                data = data.filter(created__lte = datetime.datetime.now(tz=timezone.utc))
+            else:    
+                data = data.filter(created__gte = datetime.datetime.now(tz=timezone.utc))
+
+
+        page = int(self.request.GET.get('page', 1))
+        pagination = Paginator(object_list=data, per_page=self.per_page)
+        results = self.serializer_class(pagination.page(page), many=True).data
+
+        previous = None
+        next = None
+        string = self.request.GET.get('string', '')
+
+        if(page > 1):
+            previous = reverse_lazy('posts') + f'?string={string}&date={date}&to_oldest={to_oldest}&page={page - 1}' 
+        if(page < pagination.num_pages):
+            next = reverse_lazy('posts') + f'?string={string}&date={date}&to_oldest={to_oldest}&page={page + 1}'
+
+        return Response(
+            {
+                'results': results,
+                'previous_page': previous,
+                'next_page': next,
+                'page': page, 
+                'max_page': pagination.num_pages
+            }, 
+            status=status.HTTP_202_ACCEPTED
+        )  
     pass
 
 class PostsViewSet(mixins.CreateModelMixin,
