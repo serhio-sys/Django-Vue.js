@@ -3,6 +3,7 @@ import App from '../components/HomeComponent.vue'
 import PostsComponent from '../components/PostsComponent.vue'
 import SignInComponent from '../components/SignInComponent.vue'
 import SignUpComponent from '../components/SignUpComponent.vue'
+import CreatePostComponent from '../components/CreatePostComponent.vue'
 
 const routes = [
     {
@@ -24,6 +25,11 @@ const routes = [
         path: "/sign-up/",
         name: "sign-up",
         component: SignUpComponent
+    },
+    {
+        path: "/create-post/",
+        name: "create-post",
+        component: CreatePostComponent
     }
 ];
 

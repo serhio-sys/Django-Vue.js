@@ -11,6 +11,7 @@ const store = useStore()
 const router = useRouter()
 const data = ref([])
 const currentpage = ref(1)
+const toggleBody = ref(false)
 
 onMounted(async () => {
   try{
@@ -23,6 +24,27 @@ onMounted(async () => {
   }
 })
 
+const sizeUpFunction = (e) => {
+  console.log(e.target.parentNode)
+  e.target.parentNode.parentNode.classList.toggle("open")
+  e.target.parentNode.classList.toggle("open__post")
+  console.log(document.querySelector("body"))
+  if (toggleBody.value) {  
+    document.querySelector("body").style.overflow = "visible"
+  }
+  else{  
+    document.querySelector("body").style.overflow = "hidden"
+  }
+  window.scroll({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+    });
+  toggleBody.value = !toggleBody.value
+  e.target.parentNode.parentNode.querySelector('.post__readmore').classList.toggle("hide")
+  
+}
+
 
 </script>
 
@@ -34,7 +56,7 @@ onMounted(async () => {
       </div>
       <div class="body__posts-container">
           <article v-for="post in data" class="post">
-            <div class="post__head">
+            <div v-on:click="sizeUpFunction" class="post__head">
               <img v-if="post.image" class="post__image" />
               <img src="../../public/bg.png" class="post__image" v-else/> 
               <div class="post__name">{{ post.name }}</div>
@@ -53,6 +75,18 @@ onMounted(async () => {
 
 <style scoped lang="scss">
   @import '../scss/variables.scss';
+
+  @keyframes anim {
+    0%{
+      width: 250px;
+      height: 300px;
+    }
+    100%{
+      width: calc(100% - 0.8em);
+      height: 100vh;
+    }
+  }
+
   .body{
     &__container{
       display: flex;
@@ -69,19 +103,25 @@ onMounted(async () => {
 
     }
   }
+  
+  .overflow_disable{
+    overflow: hidden;
+  }
   .post{
     display: flex;
     flex-direction: column;
-    background-image: linear-gradient(to top,rgba(255, 166, 0, 0.473),rgba(3, 166, 3, 0.522));
-    padding: 0.4em;
+    border-radius: 0.4em;
+    background-color: #d4ff009e;
+    padding: 0.8em 0.4em;
     gap: 0.2em;
     cursor: pointer;
     &__head{
+    transition: all ease-in 100ms;
       position: relative;
-      width: 200px;
-      height: 250px;
+      width: 250px;
+      height: 300px;
       overflow: hidden;
-      transition: all ease 500ms;
+      border-radius: 0.4em;
     }
     &__image{
       width: 100%;
@@ -91,7 +131,6 @@ onMounted(async () => {
       top:0;
       left:0;
       object-position: center;
-      transition: all 300ms;
     }
     &__head:hover{
       transform: scale(1.15,1.15);
@@ -125,6 +164,7 @@ onMounted(async () => {
       font-style: italic;
       height: 50px;
       overflow: hidden;
+      text-align: center;
       width: 100%;
     }
     &__footer{
@@ -161,5 +201,25 @@ onMounted(async () => {
     &__like-btn:hover{
       background-color: rgba(0, 0, 0, 0.6);
     }
+    
+  }
+  .open{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 100;
+    width: calc(100% - 0.8em);
+    height: 100vh;
+    transition: all ease-in 100ms;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.6);
+    &__post{
+      width: 50%;
+      height: 60%;
+    }
+  }
+  .hide{
+    display: none;
   }
 </style>
