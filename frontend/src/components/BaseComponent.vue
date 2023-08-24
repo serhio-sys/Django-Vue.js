@@ -36,7 +36,7 @@ import vFooter from './UI/v-Footer.vue';
   background-color: rgba($color: #000000, $alpha: 0.6);
   &__content{
     margin-top: 80px;
-    min-width: calc(1140px - 1.2em);
+    width: 100%;
     min-height: calc(90vh - 1.2em);
     padding: 0.6em;
     background-color: rgba($color: #000000, $alpha: 0.8 );

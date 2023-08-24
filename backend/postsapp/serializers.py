@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from .models import Post
-from userapp.serializers import CustomUserSerializer
+from userapp.serializers import UsernameSerializer
 
 class PostSerializer(serializers.ModelSerializer):
-    liked = CustomUserSerializer(read_only=True,many=True)
+    liked = serializers.StringRelatedField(read_only=True,many=True)
 
     class Meta:
         model = Post

@@ -75,10 +75,10 @@ class PostsViewSet(mixins.CreateModelMixin,
     permission_classes = [IsAuthenticated]
 
     @action(detail=True,methods=["post"])
-    def like(self, pk,request, *args, **kwargs):
+    def like(self, request, pk, *args, **kwargs):
         post = get_object_or_404(Post, pk=pk)
         if request.user != post.author:
-            if request.user not in post.liked:
+            if not post.liked.filter(pk = request.user.pk).exists():
                 post.liked.add(request.user)
                 post.likes += 1
             else:
