@@ -11,7 +11,6 @@ const store = useStore()
 const router = useRouter()
 const data = ref([])
 const currentpage = ref(1)
-const toggleBody = ref(false)
 
 onMounted(async () => {
   try{

@@ -11,13 +11,12 @@ const props = defineProps({
 })
 const user = store.state.user
 const post = ref(props.post)
+const toggleBody = ref(false)
 console.log(post.value.liked)
 
 const sizeUpFunction = (e) => {
-  console.log(e.target.parentNode)
   e.target.parentNode.parentNode.classList.toggle("open")
   e.target.parentNode.classList.toggle("open__post")
-  console.log(document.querySelector("body"))
   if (toggleBody.value) {  
     document.querySelector("body").style.overflow = "visible"
   }
@@ -64,7 +63,7 @@ const LikeHandler = async (e) => {
     <article class="post">
         <div v-on:click="sizeUpFunction" class="post__head">
             <img v-if="post.image" class="post__image" />
-            <img src="../../../public/bg.png" class="post__image" v-else/> 
+            <img v-else src="../../../public/bg.png" class="post__image" /> 
             <div class="post__name">{{ post.name }}</div>
         </div>
         <div class="post__desc">{{ post.desc }}</div>
@@ -78,6 +77,9 @@ const LikeHandler = async (e) => {
             <div v-else>
                 Likes:
             </div>    
+        </div>
+        <div style="text-align: center;margin-top: 1em;">
+          {{ new Date(post.created).toUTCString() }}
         </div>
     </article>
 </template>
@@ -215,7 +217,4 @@ const LikeHandler = async (e) => {
     display: none;
   }
 
-  .animation{
-
-  }
 </style>

@@ -1,13 +1,14 @@
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
-from .serializers import PostSerializer
+from .serializers import PostSerializer,PostCreationSerializer,PostsFormCreation
 from rest_framework.decorators import action
 from .models import Post
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from rest_framework.pagination import LimitOffsetPagination,PageNumberPagination
+from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
@@ -68,6 +69,18 @@ class PostsReadOnlyViewSet(mixins.RetrieveModelMixin,
             status=status.HTTP_202_ACCEPTED
         )  
     pass
+
+class PostsCreateAPIView(APIView):
+    def post(self,request):
+        print(request.data)
+        serializer = PostsFormCreation(request.data,request.FILES)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"Successfully"},status=status.HTTP_201_CREATED)
+        else:
+            return Response({"errors":serializer.errors},status=status.HTTP_400_BAD_REQUEST)
+
+
 
 class PostsViewSet(mixins.CreateModelMixin,
                    BasePostsMixin,
