@@ -1,17 +1,17 @@
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
-from .serializers import PostSerializer,PostCreationSerializer,PostsFormCreation
+from .serializers import PostSerializer,PostsFormCreation
 from rest_framework.decorators import action
 from .models import Post
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.urls import reverse_lazy
+from .utils.paginate_response import paginate_response
 
 import datetime
 
@@ -26,7 +26,14 @@ class PostsReadOnlyViewSet(mixins.RetrieveModelMixin,
                            GenericViewSet):
     per_page = 8
 
-    
+    @action(detail=False,methods=["get"],permission_classes=[IsAuthenticated,])
+    def liked(self, request):
+        data = Post.objects.filter(liked__in = [request.user.pk,])
+        return paginate_response(request=request,serializer_class=self.serializer_class,
+                          per_page=self.per_page,data=data)
+        
+
+
     def list(self, request, *args, **kwargs):
         string = request.GET.get("string", None)
         date = request.GET.get("date", None)
@@ -66,7 +73,7 @@ class PostsReadOnlyViewSet(mixins.RetrieveModelMixin,
                 'page': page, 
                 'max_page': pagination.num_pages
             }, 
-            status=status.HTTP_202_ACCEPTED
+            status=status.HTTP_200_OK
         )  
     pass
 

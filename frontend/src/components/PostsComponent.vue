@@ -9,7 +9,7 @@ import Post from './UI/v-post.vue'
 
 const store = useStore()
 const router = useRouter()
-const data = ref([])
+const data = ref()
 const currentpage = ref(1)
 
 onMounted(async () => {
@@ -32,7 +32,7 @@ onMounted(async () => {
         <Button v-on:click="router.push({path:'/create-post/'})">Create Post</Button>
       </div>
       <div class="body__posts-container">
-          <Post v-for="post in data" :post="post"/>
+          <Post v-for="post in data"  :post="post"/>
       </div>
     </div>
   </BaseComponent>

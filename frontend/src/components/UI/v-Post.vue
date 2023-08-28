@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, ref } from 'vue'
+import { defineProps, defineEmits, ref } from 'vue'
 import { RouterLink } from 'vue-router';
 import { useStore } from "vuex"
 import { HTTP } from '../../api/axios';
@@ -8,11 +8,21 @@ import { HTTP } from '../../api/axios';
 const store = useStore()
 const props = defineProps({
     post:Object
-})
+  })
+const emit = defineEmits(['remove'])
 const user = store.state.user
-const post = ref(props.post)
+const post = ref()
+
+if (props.post instanceof Array){
+   post.value = props.post
+}
+else{
+   post.value = Array(props.post)
+}
+
+
 const toggleBody = ref(false)
-console.log(post.value.liked)
+
 
 const sizeUpFunction = (e) => {
   e.target.parentNode.parentNode.classList.toggle("open")
@@ -35,21 +45,24 @@ const sizeUpFunction = (e) => {
 
 const LikeHandler = async (e) => {
     try{
-        const response = await HTTP.post(`posts/like/${post.value.id}/`,{},{
+        const response = await HTTP.post(`posts/like/${post.value[0].id}/`,{},{
             headers:{
                 Authorization: `Token ${user.token}`
             }
         })
         if (response.status == 200){
-            if (post.value.liked.includes(user.name)){
-                post.value.liked = post.value.liked.filter(item=>{
-                    return item != user.name
-                })
-                post.value.likes--
+            if (emit('remove',post.value[0].id)){
+              return
+            }
+            if (post.value[0].liked.includes(user.name)){
+              post.value[0].liked = post.value[0].liked.filter(item=>{
+                  return item != user.name
+              })
+              post.value[0].likes--
             }
             else{
-                post.value.liked.push(user.name)
-                post.value.likes++
+              post.value[0].liked.push(user.name)
+              post.value[0].likes++
             }
         }
     }
@@ -64,22 +77,22 @@ const LikeHandler = async (e) => {
         <div v-on:click="sizeUpFunction" class="post__head">
             <img v-if="post.image" class="post__image" />
             <img v-else src="../../../public/bg.png" class="post__image" /> 
-            <div class="post__name">{{ post.name }}</div>
+            <div class="post__name">{{ post[0].name }}</div>
         </div>
-        <div class="post__desc">{{ post.desc }}</div>
+        <div class="post__desc">{{ post[0].desc }}</div>
         <router-link class="post__readmore" :to="{name:'Home'}">Read More</router-link>
         <div class="post__footer">
-            <div class="post__likes">{{ post.likes }}</div>
-            <div v-if="post.author != user.id">
-                <button v-if="!post.liked.includes(user.name)" v-on:click="LikeHandler" class="post__like-btn">Like</button>
+            <div class="post__likes">{{ post[0].likes }}</div>
+            <div v-if="post[0].author != user.id">
+                <button v-if="!post[0].liked.includes(user.name)" v-on:click="LikeHandler" class="post__like-btn">Like</button>
                 <button v-else v-on:click="LikeHandler" class="post__like-btn">Unlike</button>
             </div>
             <div v-else>
-                Likes:
+                Likes: 
             </div>    
         </div>
-        <div style="text-align: center;margin-top: 1em;">
-          {{ new Date(post.created).toUTCString() }}
+        <div style="text-align: center; margin-top: 1em;">
+          {{ new Date(post[0].created).toUTCString() }}
         </div>
     </article>
 </template>
