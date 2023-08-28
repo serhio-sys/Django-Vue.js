@@ -40,7 +40,7 @@ const open_menu = () =>{
             </div>
             <div class="header__reg" v-else>
                 <router-link :to="{name: 'liked'}">Liked</router-link>
-                <router-link :to="{name: 'sign-up'}">{{ user.name }}</router-link>
+                <router-link :to="{name: 'my-posts'}">{{ user.name }}</router-link>
                 <div class="log-up"><a href="" v-on:click="store.dispatch('logout')">Logout</a></div>
             </div>
             <div class="burger__btn" @click="open_menu()" :class="{burger__btn_active: burger_active}"><span></span></div>
@@ -55,7 +55,7 @@ const open_menu = () =>{
             </div>
             <div style="display: flex;flex-direction: column;" v-else>
                 <router-link :to="{name: 'liked'}">Liked</router-link>
-                <router-link :to="{name: 'sign-up'}">{{ user.name }}</router-link>
+                <router-link :to="{name: 'my-posts'}">{{ user.name }}</router-link>
                 <a href="" v-on:click="store.dispatch('loguot')">Logout</a>
             </div>
         </div>

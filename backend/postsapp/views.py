@@ -31,7 +31,12 @@ class PostsReadOnlyViewSet(mixins.RetrieveModelMixin,
         data = Post.objects.filter(liked__in = [request.user.pk,])
         return paginate_response(request=request,serializer_class=self.serializer_class,
                           per_page=self.per_page,data=data)
-        
+    @action(detail=False,methods=['get'],permission_classes=[IsAuthenticated,])
+    def my_posts(self, request):
+        data = Post.objects.filter(author = request.user.pk)
+
+        return paginate_response(request=request,serializer_class=self.serializer_class,
+                          per_page=self.per_page,data=data)
 
 
     def list(self, request, *args, **kwargs):
@@ -90,6 +95,7 @@ class PostsCreateAPIView(APIView):
 
 
 class PostsViewSet(mixins.CreateModelMixin,
+                   mixins.DestroyModelMixin,
                    BasePostsMixin,
                    GenericViewSet):
     permission_classes = [IsAuthenticated]

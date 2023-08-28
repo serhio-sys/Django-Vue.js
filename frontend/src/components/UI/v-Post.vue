@@ -22,11 +22,7 @@ else{
 
 
 const toggleBody = ref(false)
-
-
-const sizeUpFunction = (e) => {
-  e.target.parentNode.parentNode.classList.toggle("open")
-  e.target.parentNode.classList.toggle("open__post")
+const bodyOverflowToggler = () => {
   if (toggleBody.value) {  
     document.querySelector("body").style.overflow = "visible"
   }
@@ -39,6 +35,13 @@ const sizeUpFunction = (e) => {
         behavior: "smooth",
     });
   toggleBody.value = !toggleBody.value
+}
+
+
+const sizeUpFunction = (e) => {
+  e.target.parentNode.parentNode.classList.toggle("open")
+  e.target.parentNode.classList.toggle("open__post")
+  bodyOverflowToggler()
   e.target.parentNode.parentNode.querySelector('.post__readmore').classList.toggle("hide")
   
 }
@@ -55,7 +58,7 @@ const LikeHandler = async (e) => {
               return
             }
             if (post.value[0].liked.includes(user.name)){
-              post.value[0].liked = post.value[0].liked.filter(item=>{
+              post.value[0].liked = post.value[0].liked.filter(item => {
                   return item != user.name
               })
               post.value[0].likes--
@@ -69,6 +72,35 @@ const LikeHandler = async (e) => {
     catch(err){
         console.log(err)
     }
+}
+
+const deletePost = async () => {
+  try{
+    const response = await HTTP.delete(`posts/delete/${post.value[0].id}`, {
+      headers:{
+        Authorization: `Token ${user.token}`
+      }
+    })
+    if (response.status === 204){
+      emit('remove',post.value[0].id)
+    }
+  }
+  catch(err){
+    console.log(err)
+  }
+}
+
+const showDialogDelete = (e) => {
+  if (e.target.classList.contains("post_dialog")){
+    e.target.classList.toggle("__show")
+  }
+  else if(e.target.parentNode.classList.contains("post__dialog-block")){
+    e.target.parentNode.parentNode.classList.toggle("__show")
+  }
+  else{
+    e.target.parentNode.querySelector(".post__dialog").classList.toggle("__show")
+  }
+  bodyOverflowToggler()  
 }
 
 </script>
@@ -90,6 +122,16 @@ const LikeHandler = async (e) => {
             <div v-else>
                 Likes: 
             </div>    
+        </div>
+        <div style="margin: 0 auto; margin-top: 0.5em;" v-if="user.id == post[0].author">
+          <button class="post__delete-btn" v-on:click="showDialogDelete">Delete</button>
+          <div class="post__dialog" v-on:click.self="showDialogDelete">
+            <h1>Are you really want to delete this post({{ post[0].name }})?</h1>
+            <div style="display: flex;gap: 1em;position: relative; z-index: 10000;" class="post__dialog-block">
+              <button class="post__delete-btn" v-on:click="deletePost">Yes</button>
+              <button class="post__like-btn" v-on:click.stop="showDialogDelete">No</button>
+            </div>
+          </div>
         </div>
         <div style="text-align: center; margin-top: 1em;">
           {{ new Date(post[0].created).toUTCString() }}
@@ -117,8 +159,24 @@ const LikeHandler = async (e) => {
     padding: 0.8em 0.4em;
     gap: 0.2em;
     cursor: pointer;
+    &__dialog{
+      position: absolute;
+      top: -100%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 1em;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      z-index: 100;
+      transition: 300ms all ease-in;
+      height: 100vh;
+    }
     &__head{
-    transition: all ease-in 100ms;
+      transition: all ease-in 100ms;
       position: relative;
       width: 250px;
       height: 300px;
@@ -177,7 +235,7 @@ const LikeHandler = async (e) => {
       align-items: center;
       gap: 0.4em;
     }
-    &__like-btn{
+    &__like-btn, &__delete-btn{
       animation: anim 400ms 1;
       outline: none;
       border-radius: 0.4em;
@@ -204,12 +262,20 @@ const LikeHandler = async (e) => {
     &__like-btn:hover{
       background-color: rgba(0, 0, 0, 0.6);
     }
-    
+    &__delete-btn{
+      background-color: darkred;
+    }
+    &__delete-btn:hover{
+      transform: scale(1.1,1.1);
+      background-color: red;
+    }
   }
   .overflow_disable{
     overflow: hidden;
   }
-  
+  .__show{
+    top: 50%;
+  }
   .open{
     position: absolute;
     top:50%;

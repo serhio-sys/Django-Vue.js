@@ -5,6 +5,7 @@ import SignInComponent from '../components/SignInComponent.vue'
 import SignUpComponent from '../components/SignUpComponent.vue'
 import CreatePostComponent from '../components/CreatePostComponent.vue'
 import LikedComponent from '../components/LikedComponent.vue'
+import UserPostsComponent from '../components/UserPostsComponent.vue'
 
 const routes = [
     {
@@ -36,6 +37,11 @@ const routes = [
         path: "/liked/",
         name: "liked",
         component: LikedComponent
+    },
+    {
+        path: "/my-posts/",
+        name: "my-posts",
+        component: UserPostsComponent
     }
 ];
 
