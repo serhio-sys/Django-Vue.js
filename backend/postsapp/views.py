@@ -1,7 +1,7 @@
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
-from .serializers import PostSerializer,PostsFormCreation
+from .serializers import PostSerializer,PostsFormCreation,PostCreationSerializer
 from rest_framework.decorators import action
 from .models import Post
 from rest_framework.response import Response
@@ -85,7 +85,7 @@ class PostsReadOnlyViewSet(mixins.RetrieveModelMixin,
 class PostsCreateAPIView(APIView):
     def post(self,request):
         print(request.data)
-        serializer = PostsFormCreation(request.data,request.FILES)
+        serializer = PostCreationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({"Successfully"},status=status.HTTP_201_CREATED)

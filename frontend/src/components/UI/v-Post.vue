@@ -1,8 +1,9 @@
 <script setup>
 import { defineProps, defineEmits, ref } from 'vue'
-import { RouterLink } from 'vue-router';
+import { RouterLink } from 'vue-router'
+import { API_URL } from '../../utils/utils'
 import { useStore } from "vuex"
-import { HTTP } from '../../api/axios';
+import { HTTP } from '../../api/axios'
 
 
 const store = useStore()
@@ -11,14 +12,7 @@ const props = defineProps({
   })
 const emit = defineEmits(['remove'])
 const user = store.state.user
-const post = ref()
-console.log(emit.length)
-if (props.post instanceof Array){
-   post.value = props.post
-}
-else{
-   post.value = Array(props.post)
-}
+const post = ref(props.post)
 
 
 const toggleBody = ref(false)
@@ -76,13 +70,13 @@ const LikeHandler = async (e) => {
 
 const deletePost = async () => {
   try{
-    const response = await HTTP.delete(`posts/delete/${post.value[0].id}`, {
+    const response = await HTTP.delete(`posts/delete/${post.value.id}`, {
       headers:{
         Authorization: `Token ${user.token}`
       }
     })
     if (response.status === 204){
-      emit('remove',post.value[0].id)
+      emit('remove',post.value.id)
     }
   }
   catch(err){
@@ -107,26 +101,26 @@ const showDialogDelete = (e) => {
 <template>
     <article class="post">
         <div v-on:click="sizeUpFunction" class="post__head">
-            <img v-if="post.image" class="post__image" />
+            <img v-if="post.image" :src="API_URL+post.image" class="post__image" />
             <img v-else src="../../../public/bg.png" class="post__image" /> 
-            <div class="post__name">{{ post[0].name }}</div>
+            <div class="post__name">{{ post.name }}</div>
         </div>
-        <div class="post__desc">{{ post[0].desc }}</div>
+        <div class="post__desc">{{ post.desc }}</div>
         <router-link class="post__readmore" :to="{name:'Home'}">Read More</router-link>
         <div class="post__footer">
-            <div class="post__likes">{{ post[0].likes }}</div>
-            <div v-if="post[0].author != user.id">
-                <button v-if="!post[0].liked.includes(user.name)" v-on:click="LikeHandler" class="post__like-btn">Like</button>
+            <div class="post__likes">{{ post.likes }}</div>
+            <div v-if="post.author != user.id">
+                <button v-if="!post.liked.includes(user.name)" v-on:click="LikeHandler" class="post__like-btn">Like</button>
                 <button v-else v-on:click="LikeHandler" class="post__like-btn">Unlike</button>
             </div>
             <div v-else>
                 Likes: 
             </div>    
         </div>
-        <div style="margin: 0 auto; margin-top: 0.5em;" v-if="user.id == post[0].author">
+        <div style="margin: 0 auto; margin-top: 0.5em;" v-if="user.id == post.author">
           <button class="post__delete-btn" v-on:click="showDialogDelete">Delete</button>
           <div class="post__dialog" v-on:click.self="showDialogDelete">
-            <h1>Are you really want to delete this post({{ post[0].name }})?</h1>
+            <h1>Are you really want to delete this post({{ post.name }})?</h1>
             <div style="display: flex;gap: 1em;position: relative; z-index: 10000;" class="post__dialog-block">
               <button class="post__delete-btn" v-on:click="deletePost">Yes</button>
               <button class="post__like-btn" v-on:click.stop="showDialogDelete">No</button>
@@ -134,7 +128,7 @@ const showDialogDelete = (e) => {
           </div>
         </div>
         <div style="text-align: center; margin-top: 1em;">
-          {{ new Date(post[0].created).toUTCString() }}
+          {{ new Date(post.created).toUTCString() }}
         </div>
     </article>
 </template>

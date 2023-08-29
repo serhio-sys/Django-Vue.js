@@ -11,22 +11,32 @@ import { HTTP } from '../api/axios'
 
 const router = useRouter()
 const errors = ref([])
+const formImage = ref()
 const user = ref(useStore().state.user) 
 const data = ref({
   name:"",
   desc:"",
-  author:user.value.id,
-  image:null
+  author:user.value.id
 })
 
 const handleSubmit = async () => {
-  console.log(data.value)
+  const data_T = {
+    name:data.value.name,
+    desc:data.value.desc,
+    author:data.value.author,
+    image:formImage.value  
+  }
+  let formData = new FormData()
+  formData.append("name",data.value.name)
+  formData.append("desc",data.value.desc)
+  formData.append("author",data.value.author)
+  formData.append("image",formImage.value)
   if (data.value.name != "" && data.value.desc != ""){
         try{    
-            const response = await HTTP.post("posts/create/", data.value, {
+            const response = await HTTP.post("posts/create/", formData,{
               headers:{
                 Authorization: `Token ${user.value.token}`
-              }
+            }
             })
             if (response.status === 201){
                 router.push({ path:"/" })
@@ -37,6 +47,10 @@ const handleSubmit = async () => {
             console.log(err)
         }   
     }
+}
+
+const onChange = (event) => {
+    formImage.value = event.target.files[0]
 }
 
 const handleInput = (e) => {
@@ -57,7 +71,7 @@ const handleInput = (e) => {
                 <div v-for="err in errors" class="error">{{err}}</div>
             </div>
             <Input type="text" v-on:input="handleInput" name="name" placeholder="Name"/>
-            <Input type="file" v-on:input="handleInput" name="image" placeholder="Image" />
+            <Input type="file" v-on:change="onChange" name="image" placeholder="Image" />
             <vTextarea name="desc" v-on:input="handleInput" placeholder="Decription" />
             <Button>Create Post</Button>
         </form>

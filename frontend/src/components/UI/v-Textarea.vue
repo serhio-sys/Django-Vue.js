@@ -10,7 +10,6 @@ const properties = defineProps({
 
 const emit = defineEmits(['inputHandler'])
 
-console.log(properties)
 
 </script>
 <template>
