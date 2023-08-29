@@ -22,6 +22,12 @@ onMounted(async () => {
   }
 })
 
+const removePost = (id) => {
+    data.value = data.value.filter(item => {
+        return item.id != id
+    })
+    return true
+}
 
 </script>
 
@@ -32,7 +38,7 @@ onMounted(async () => {
         <Button v-on:click="router.push({path:'/create-post/'})">Create Post</Button>
       </div>
       <div class="body__posts-container">
-          <Post v-for="post in data"  :post="post"/>
+          <Post v-for="post in data" :post="post"/>
       </div>
     </div>
   </BaseComponent>

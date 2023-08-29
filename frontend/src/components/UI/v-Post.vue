@@ -12,7 +12,7 @@ const props = defineProps({
 const emit = defineEmits(['remove'])
 const user = store.state.user
 const post = ref()
-
+console.log(emit.length)
 if (props.post instanceof Array){
    post.value = props.post
 }
