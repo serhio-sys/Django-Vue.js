@@ -81,7 +81,7 @@ const handleInput = (e) => {
 const handleSubmit = async () => {
     if (auth.value.username !== "" && auth.value.email !== "" && auth.value.password !== "" && checkOnFieldErrors()){
         try{    
-            const response = await HTTP.post("users/auth/users/", auth.value)
+            const response = await HTTP.post("/users/auth/users/", auth.value)
             if (response.status === 201){
                 router.push({ path:"/" })
             }
@@ -106,13 +106,13 @@ const handleSubmit = async () => {
         <div class="errors" v-if="errors.length > 0">
           <div v-for="err in errors" class="error">{{err}}</div>
         </div>
-        <CustomInput type="text" name="username" v-on:input="handleInput" placeholder="Username" />
+        <CustomInput type="text" name="username" v-on:input="(e) => handleInput(auth,e)" placeholder="Username" />
         <div class="field_err" v-if="autherr.username">{{ autherr.username }}</div>
-        <CustomInput type="email" name="email" v-on:input="handleInput" placeholder="Email"/>
+        <CustomInput type="email" name="email" v-on:input="(e) => handleInput(auth,e)" placeholder="Email"/>
         <div class="field_err" v-if="autherr.email">{{ autherr.email }}</div>
-        <CustomInput type="password" name="password" v-on:input="handleInput" placeholder="Password"/>
+        <CustomInput type="password" name="password" v-on:input="(e) => handleInput(auth,e)" placeholder="Password"/>
         <div class="field_err" v-if="autherr.password">{{ autherr.password }}</div>
-        <CustomInput type="password" name="password1" v-on:input="handleInput" placeholder="Repeat password"/>
+        <CustomInput type="password" name="password1" v-on:input="(e) => handleInput(auth,e)" placeholder="Repeat password"/>
         <div class="field_err" v-if="autherr.password1">{{ autherr.password1 }}</div>
         <Button>Sign In</Button>
       </form>
@@ -123,54 +123,6 @@ const handleSubmit = async () => {
 <style scoped lang="scss">
 
 @import "../scss/variables.scss";
-    @keyframes anim{
-        0%{
-            background-size: 0% 2px;
-        }
-        100%{
-            background-size: 100% 2px;
-        }
-    }
-    .content{
-        width: 100%;
-        height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .form{
-        display: flex;
-        color: white;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        max-width: 300px;
-        gap: 0.5em;
-        input{
-            color: gray;
-            background: transparent;
-            background-image: linear-gradient(currentcolor,currentcolor);
-            background-repeat: no-repeat;
-            background-size: 100% 2px;
-            outline: none;
-            border: none;
-            font-size: 18px;    
-            padding: 0.3em 0.5em;
-            transition: all ease-in 300ms;
-            background-position: 0% 100%;
-        }
-        input:focus{
-            background-image: linear-gradient(to right, white,lightgray);
-            background-size: 100% 2px;
-            animation: anim 400ms 1;
-            color: white;
-        }
-    }
-    .errors{
-        padding: 0.4em 1em;
-        width: calc(400px - 2em);
-        color: red;
-        text-align: center;
-    }
+@import "../scss/baseForms.scss";
     
 </style>

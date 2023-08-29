@@ -8,7 +8,8 @@ import { HTTP } from '../../api/axios'
 
 const store = useStore()
 const props = defineProps({
-    post:Object
+    post:Object,
+    canRemove:Boolean
   })
 const emit = defineEmits(['remove'])
 const user = store.state.user
@@ -32,45 +33,46 @@ const bodyOverflowToggler = () => {
 }
 
 
-const sizeUpFunction = (e) => {
-  e.target.parentNode.parentNode.classList.toggle("open")
-  e.target.parentNode.classList.toggle("open__post")
+const sizeUpFunction = (event) => {
+  event.target.parentNode.parentNode.classList.toggle("open")
+  event.target.parentNode.classList.toggle("open__post")
   bodyOverflowToggler()
-  e.target.parentNode.parentNode.querySelector('.post__readmore').classList.toggle("hide")
-  
+  event.target.parentNode.parentNode.querySelector('.post__readmore').classList.toggle("hide") 
 }
 
-const LikeHandler = async (e) => {
+const LikeHandler = async () => {
     try{
-        const response = await HTTP.post(`posts/like/${post.value[0].id}/`,{},{
+        const response = await HTTP.post(`/posts/like/${post.value.id}/`,{},{
             headers:{
                 Authorization: `Token ${user.token}`
             }
         })
         if (response.status == 200){
-            if (emit('remove',post.value[0].id)){
-              return
+            if (!props.canRemove) {
+              if (emit('remove',post.value.id)){
+                return
+              }
             }
-            if (post.value[0].liked.includes(user.name)){
-              post.value[0].liked = post.value[0].liked.filter(item => {
+            if (post.value.liked.includes(user.name)){
+              post.value.liked = post.value.liked.filter(item => {
                   return item != user.name
               })
-              post.value[0].likes--
+              post.value.likes--
             }
             else{
-              post.value[0].liked.push(user.name)
-              post.value[0].likes++
+              post.value.liked.push(user.name)
+              post.value.likes++
             }
         }
     }
-    catch(err){
-        console.log(err)
+    catch(error){
+        console.log(error)
     }
 }
 
 const deletePost = async () => {
   try{
-    const response = await HTTP.delete(`posts/delete/${post.value.id}`, {
+    const response = await HTTP.delete(`/posts/delete/${post.value.id}`, {
       headers:{
         Authorization: `Token ${user.token}`
       }
@@ -84,15 +86,15 @@ const deletePost = async () => {
   }
 }
 
-const showDialogDelete = (e) => {
-  if (e.target.classList.contains("post_dialog")){
-    e.target.classList.toggle("__show")
+const showDialogDelete = (event) => {
+  if (event.target.classList.contains("post_dialog")){
+    event.target.classList.toggle("__show")
   }
-  else if(e.target.parentNode.classList.contains("post__dialog-block")){
-    e.target.parentNode.parentNode.classList.toggle("__show")
+  else if(event.target.parentNode.classList.contains("post__dialog-block")){
+    event.target.parentNode.parentNode.classList.toggle("__show")
   }
   else{
-    e.target.parentNode.querySelector(".post__dialog").classList.toggle("__show")
+    event.target.parentNode.querySelector(".post__dialog").classList.toggle("__show")
   }
   bodyOverflowToggler()  
 }

@@ -14,7 +14,7 @@ const currentpage = ref(1)
 
 onMounted(async () => {
   try{
-    const response = await HTTP.get(`posts/?page=${currentpage.value}`)
+    const response = await HTTP.get(`/posts/?page=${currentpage.value}`)
     data.value = response.data.results
   }
   catch(err){
@@ -38,7 +38,7 @@ const removePost = (id) => {
         <Button v-on:click="router.push({path:'/create-post/'})">Create Post</Button>
       </div>
       <div class="body__posts-container">
-          <Post v-for="post in data" :post="post"/>
+          <Post v-for="post in data" @remove="removePost" :canRemove="true" :post="post"/>
       </div>
     </div>
   </BaseComponent>

@@ -7,6 +7,7 @@ import { useRouter } from 'vue-router'
 import Input from './UI/v-Input.vue'
 import vTextarea from './UI/v-Textarea.vue'
 import { HTTP } from '../api/axios'
+import { handleInput } from '../utils/utils'
 
 
 const router = useRouter()
@@ -20,12 +21,6 @@ const data = ref({
 })
 
 const handleSubmit = async () => {
-  const data_T = {
-    name:data.value.name,
-    desc:data.value.desc,
-    author:data.value.author,
-    image:formImage.value  
-  }
   let formData = new FormData()
   formData.append("name",data.value.name)
   formData.append("desc",data.value.desc)
@@ -33,7 +28,7 @@ const handleSubmit = async () => {
   formData.append("image",formImage.value)
   if (data.value.name != "" && data.value.desc != ""){
         try{    
-            const response = await HTTP.post("posts/create/", formData,{
+            const response = await HTTP.post("/posts/create/", formData,{
               headers:{
                 Authorization: `Token ${user.value.token}`
             }
@@ -53,11 +48,6 @@ const onChange = (event) => {
     formImage.value = event.target.files[0]
 }
 
-const handleInput = (e) => {
-    data.value[e.target.name] = e.target.value
-}
-
-
 </script>
 
 
@@ -70,9 +60,9 @@ const handleInput = (e) => {
             <div class="errors" v-if="errors.length > 0">
                 <div v-for="err in errors" class="error">{{err}}</div>
             </div>
-            <Input type="text" v-on:input="handleInput" name="name" placeholder="Name"/>
+            <Input type="text" v-on:input="(e) => handleInput(data,e)" name="name" placeholder="Name"/>
             <Input type="file" v-on:change="onChange" name="image" placeholder="Image" />
-            <vTextarea name="desc" v-on:input="handleInput" placeholder="Decription" />
+            <vTextarea name="desc" v-on:input="(e) => handleInput(data,e)" placeholder="Decription" />
             <Button>Create Post</Button>
         </form>
     </div>
