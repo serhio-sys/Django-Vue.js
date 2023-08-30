@@ -153,6 +153,7 @@ const showDialogDelete = (event) => {
     border-radius: 0.4em;
     background-color: #d4ff009e;
     padding: 0.8em 0.4em;
+    width: 250px;
     gap: 0.2em;
     cursor: pointer;
     &__dialog{

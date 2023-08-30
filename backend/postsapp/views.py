@@ -1,7 +1,7 @@
 from rest_framework.viewsets import GenericViewSet
 from rest_framework import mixins
 from rest_framework.permissions import IsAuthenticatedOrReadOnly,IsAuthenticated
-from .serializers import PostSerializer,PostsFormCreation,PostCreationSerializer
+from .serializers import PostSerializer,PostCreationSerializer
 from rest_framework.decorators import action
 from .models import Post
 from rest_framework.response import Response
@@ -9,21 +9,18 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from django.utils import timezone
-from django.core.paginator import Paginator
-from django.urls import reverse_lazy
-from .utils.paginate_response import paginate_response
+from .utils.paginate_response import paginate_response,paginate_response_with_filters
 
 import datetime
 
-class BasePostsMixin():
+class BasePostsMixin(GenericViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly,]
     serializer_class = PostSerializer
     queryset = Post.objects.all()
 
 class PostsReadOnlyViewSet(mixins.RetrieveModelMixin,
                            mixins.ListModelMixin,
-                           BasePostsMixin,
-                           GenericViewSet):
+                           BasePostsMixin):
     per_page = 8
 
     @action(detail=False,methods=["get"],permission_classes=[IsAuthenticated,])
@@ -56,35 +53,15 @@ class PostsReadOnlyViewSet(mixins.RetrieveModelMixin,
             else:    
                 data = data.filter(created__gte = datetime.datetime.now(tz=timezone.utc))
 
-
-        page = int(self.request.GET.get('page', 1))
-        pagination = Paginator(object_list=data, per_page=self.per_page)
-        results = self.serializer_class(pagination.page(page), many=True).data
-
-        previous = None
-        next = None
         string = self.request.GET.get('string', '')
+        return paginate_response_with_filters(request=request,serializer_class=self.serializer_class,
+                data=data,per_page=self.per_page,
+                filters={"string":string,"date":date,"to_oldest":to_oldest})
 
-        if(page > 1):
-            previous = reverse_lazy('posts') + f'?string={string}&date={date}&to_oldest={to_oldest}&page={page - 1}' 
-        if(page < pagination.num_pages):
-            next = reverse_lazy('posts') + f'?string={string}&date={date}&to_oldest={to_oldest}&page={page + 1}'
-
-        return Response(
-            {
-                'results': results,
-                'previous_page': previous,
-                'next_page': next,
-                'page': page, 
-                'max_page': pagination.num_pages
-            }, 
-            status=status.HTTP_200_OK
-        )  
-    pass
+    
 
 class PostsCreateAPIView(APIView):
     def post(self,request):
-        print(request.data)
         serializer = PostCreationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -96,8 +73,7 @@ class PostsCreateAPIView(APIView):
 
 class PostsViewSet(mixins.CreateModelMixin,
                    mixins.DestroyModelMixin,
-                   BasePostsMixin,
-                   GenericViewSet):
+                   BasePostsMixin):
     permission_classes = [IsAuthenticated]
 
     @action(detail=True,methods=["post"])

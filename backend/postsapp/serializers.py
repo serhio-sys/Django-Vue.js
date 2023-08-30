@@ -1,12 +1,5 @@
 from rest_framework import serializers
 from .models import Post
-from django import forms
-
-class PostsFormCreation(forms.ModelForm):
-    
-    class Meta:
-        model = Post
-        fields = ('__all__')
  
 
 class PostSerializer(serializers.ModelSerializer):
