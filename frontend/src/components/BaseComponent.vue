@@ -5,7 +5,7 @@ import vFooter from './UI/v-Footer.vue';
 </script>
 
 <template>
-    <img src="../assets/back.jpg" class="back_img">
+  <img src="../assets/back.jpg" class="back_img">
   <vNavBar/>
   <div class="body">
     <div class="body__content">

@@ -50,6 +50,7 @@ const LikeHandler = async () => {
         if (response.status == 200){
             if (!props.canRemove) {
               if (emit('remove',post.value.id)){
+                bodyOverflowToggler()
                 return
               }
             }

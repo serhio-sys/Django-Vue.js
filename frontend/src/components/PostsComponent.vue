@@ -12,8 +12,6 @@ const store = useStore()
 const router = useRouter()
 const data = ref()
 const currentPage = ref(1)
-const nextPage = ref()
-const previousPage = ref()
 const maxPages = ref()
 
 onMounted(async () => {
@@ -21,8 +19,6 @@ onMounted(async () => {
     const response = await HTTP.get(`/posts/?page=${currentPage.value}`)
     maxPages.value = response.data.max_page
     currentPage.value = response.data.page
-    previousPage.value = response.data.previous_page
-    nextPage.value = response.data.next_page
     data.value = response.data.results
   }
   catch(err){
@@ -35,8 +31,6 @@ watch(currentPage, async () => {
     const response = await HTTP.get(`/posts/?page=${currentPage.value}`)
     maxPages.value = response.data.max_page
     currentPage.value = response.data.page
-    previousPage.value = response.data.previous_page
-    nextPage.value = response.data.next_page
     data.value = response.data.results
   }
   catch(err){
@@ -75,28 +69,6 @@ const changePage = (event) => {
 
 <style scoped lang="scss">
   @import '../scss/variables.scss';
-  .body{
-    &__paginator-container{
-      display: flex;
-      justify-content: center;
-      margin: 1em;
-    }
-    &__container{
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-    &__posts-container{
-      display: flex;
-      gap: 2em;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 2em;
-      color: white;
+  @import '../scss/postsList.scss';
 
-    }
-  }
-  
- 
 </style>
