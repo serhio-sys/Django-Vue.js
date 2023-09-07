@@ -1,0 +1,22 @@
+.content{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.form{
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-width: 300px;
+    gap: 0.5em;
+}
+.errors{
+    padding: 0.4em 1em;
+    width: calc(400px - 2em);
+    color: red;
+    text-align: center;
+}

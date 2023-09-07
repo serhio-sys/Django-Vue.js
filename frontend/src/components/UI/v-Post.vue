@@ -17,6 +17,7 @@ const post = ref(props.post)
 
 
 const toggleBody = ref(false)
+
 const bodyOverflowToggler = () => {
   if (toggleBody.value) {  
     document.querySelector("body").style.overflow = "visible"
@@ -50,7 +51,6 @@ const LikeHandler = async () => {
         if (response.status == 200){
             if (!props.canRemove) {
               if (emit('remove',post.value.id)){
-                bodyOverflowToggler()
                 return
               }
             }
@@ -72,6 +72,7 @@ const LikeHandler = async () => {
 }
 
 const deletePost = async () => {
+  bodyOverflowToggler()  
   try{
     const response = await HTTP.delete(`/posts/delete/${post.value.id}`, {
       headers:{

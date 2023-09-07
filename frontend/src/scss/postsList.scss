@@ -1,0 +1,21 @@
+.body{
+    &__paginator-container{
+      display: flex;
+      justify-content: center;
+      margin: 1em;
+    }
+    &__container{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    &__posts-container{
+      display: flex;
+      gap: 2em;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 2em;
+      color: white;
+    }
+  }

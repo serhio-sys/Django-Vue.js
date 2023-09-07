@@ -6,7 +6,7 @@ import Button from './UI/v-button.vue'
 import { useRouter } from 'vue-router'
 import Input from './UI/v-Input.vue'
 import vTextarea from './UI/v-Textarea.vue'
-import { HTTP } from '../api/axios'
+import { REQUIRE_AUTH_HTTP } from '../api/axios'
 import { handleInput } from '../utils/utils'
 
 
@@ -28,11 +28,7 @@ const handleSubmit = async () => {
   formData.append("image",formImage.value)
   if (data.value.name != "" && data.value.desc != ""){
         try{    
-            const response = await HTTP.post("/posts/create/", formData,{
-              headers:{
-                Authorization: `Token ${user.value.token}`
-            }
-            })
+            const response = await REQUIRE_AUTH_HTTP(user.value.token).post("/posts/create/", formData)
             if (response.status === 201){
                 router.push({ path:"/" })
             }

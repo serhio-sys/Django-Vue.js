@@ -10,6 +10,7 @@ djoser = "*"
 pillow = "*"
 django-cors-headers = "*"
 six = "*"
+django-allauth = "*"
 
 [dev-packages]
 

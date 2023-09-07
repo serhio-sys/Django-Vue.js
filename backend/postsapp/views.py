@@ -8,10 +8,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
-from django.utils import timezone
 from .utils.paginate_response import paginate_response,paginate_response_with_filters
-
-import datetime
+from .utils.data_filters import data_filter
 
 class BasePostsMixin(GenericViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly,]
@@ -37,26 +35,18 @@ class PostsReadOnlyViewSet(mixins.RetrieveModelMixin,
 
 
     def list(self, request, *args, **kwargs):
-        string = request.GET.get("string", None)
-        date = request.GET.get("date", None)
-        to_oldest = request.GET.get("to_oldest", None)
-
         data = Post.objects.all()
-        if string is not None:
-            data = data.filter(name__icontains = string)
-        if date is not None:
-            data = data.filter(created__contains=datetime.date(int(date.split("-")[0]),int(date.split("-")[1]),int(date.split("-")[2])))
-        if to_oldest is not None:
-            print(to_oldest)
-            if to_oldest:    
-                data = data.filter(created__lte = datetime.datetime.now(tz=timezone.utc))
-            else:    
-                data = data.filter(created__gte = datetime.datetime.now(tz=timezone.utc))
+        filters = {
+            "string":request.GET.get("string", None),
+            "date":request.GET.get("date", None),
+            "to_oldest":request.GET.get("to_oldest", None)
+        }
+        
+        data_filter(filters=filters,data=data)
 
-        string = self.request.GET.get('string', '')
         return paginate_response_with_filters(request=request,serializer_class=self.serializer_class,
                 data=data,per_page=self.per_page,
-                filters={"string":string,"date":date,"to_oldest":to_oldest})
+                filters=filters)
 
     
 
